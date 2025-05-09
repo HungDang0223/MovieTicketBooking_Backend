@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "secrets1": {
+      "type": "secrets.user"
+    },
+    "storage1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('serviceConnectorResourceGroupName')]/providers/Microsoft.ServiceLinker/locations/westus/connectors/StorageConnection_3417DA11A2, /subscriptions/6f6541cd-acc7-4706-afd6-784c6102fd3e/resourceGroups/movieticket_group/providers/Microsoft.ServiceLinker/locations/westus/connectors/StorageConnection_F689D233C6",
+      "secretStore": "LocalSecretsFile",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/movieticketstorage",
+      "type": "storage.azure",
+      "connectionId": "StorageConnection"
+    },
+    "compute.appService1": {
+      "group": "connections",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/movieticket",
+      "type": "compute.appService.container"
+    },
+    "compute.appService2": {
+      "group": "connections",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/MovieTicketbackend20250211162510",
+      "type": "compute.appService.windows"
+    },
+    "apis1": {
+      "ignored": "true",
+      "type": "apis"
+    }
+  }
+}
