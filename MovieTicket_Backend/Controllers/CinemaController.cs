@@ -28,18 +28,7 @@ namespace MovieTicket_Backend.Controllers
             {
                 return NotFound(new { status = "error", message = "No cinemas found" });
             }
-            return Ok(new { status = "success", data = cinemas });
-        }
-        [HttpGet("brand/{id}")]
-        public async Task<IActionResult> GetCinemasByBrandId(int id)
-        {
-            var connection = _dbConnectionFactory.CreateConnection();
-            var cinema = await _cinemaRepository.GetCinemasByBrandId(id);
-            if (cinema == null)
-            {
-                return NotFound(new { status = "error", message = "Cinema not found" });
-            }
-            return Ok(new { status = "success", data = cinema });
+            return Ok(cinemas);
         }
 
         [HttpGet("city/{id}")]
@@ -51,7 +40,7 @@ namespace MovieTicket_Backend.Controllers
             {
                 return NotFound(new { status = "error", message = "Cinema not found" });
             }
-            return Ok(new { status = "success", data = cinema });
+            return Ok(cinema);
         }
         [HttpGet("movie/{id}")]
         public async Task<IActionResult> GetCinemasByMovieId(int id)
@@ -62,7 +51,7 @@ namespace MovieTicket_Backend.Controllers
             {
                 return NotFound(new { status = "error", message = "Cinema not found" });
             }
-            return Ok(new { status = "success", data = cinema });
+            return Ok(cinema);
         }
     }
 }

@@ -13,26 +13,26 @@ namespace MovieTicket_Backend.Hubs
             _logger = logger;
         }
 
-        // Client gọi phương thức này để tham gia group theo screeningId
-        public async Task JoinScreening(int screeningId)
+        // Client gọi phương thức này để tham gia group theo showingId
+        public async Task JoiShowing(int showingId)
         {
-            string groupName = GetScreeningGroupName(screeningId);
+            string groupName = GetShowingGroupName(showingId);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            _logger.LogInformation($"Client {Context.ConnectionId} joined screening group {screeningId}");
+            _logger.LogInformation($"Client {Context.ConnectionId} joined Showing group {showingId}");
         }
 
         // Client gọi phương thức này để rời khỏi group
-        public async Task LeaveScreening(int screeningId)
+        public async Task LeaveShowing(int showingId)
         {
-            string groupName = GetScreeningGroupName(screeningId);
+            string groupName = GetShowingGroupName(showingId);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-            _logger.LogInformation($"Client {Context.ConnectionId} left screening group {screeningId}");
+            _logger.LogInformation($"Client {Context.ConnectionId} left Showing group {showingId}");
         }
 
         // Helper method để tạo tên group
-        private string GetScreeningGroupName(int screeningId)
+        private string GetShowingGroupName(int showingId)
         {
-            return $"screening_{screeningId}";
+            return $"Showing_{showingId}";
         }
 
         // Xử lý khi client ngắt kết nối

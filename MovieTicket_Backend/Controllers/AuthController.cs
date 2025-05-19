@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using MimeKit;
 using MovieTicket_Backend.Data;
 using MovieTicket_Backend.Models;
+using MovieTicket_Backend.Models.ModelDTOs;
 using MovieTicket_Backend.Models.ModelRequests;
 using MovieTicket_Backend.Repositories;
 using MovieTicket_Backend.RepositoryInpl;
 using MovieTicket_Backend.Services;
 using StackExchange.Redis;
 using System.Threading.Tasks;
+using static MovieTicket_Backend.Models.ModelDTOs.ModelRequests;
 
 namespace MovieTicket_Backend.Controllers
 {
@@ -21,13 +23,16 @@ namespace MovieTicket_Backend.Controllers
         private readonly IAuthenticationRepository _authenticationRepository;
         private readonly PasswordHasher<string> _passwordHasher;
         private readonly DbConnectionFactory _dbConnectionFactory;
+        private readonly IEmailService _emailService;
         private readonly IVerificationService _verificationService;
 
-        public AuthController(IUserRepository userRepository, DbConnectionFactory dbConnectionFactory, IConnectionMultiplexer redis)
+        public AuthController(IUserRepository userRepository, DbConnectionFactory dbConnectionFactory,
+            IConnectionMultiplexer redis, IEmailService emailService)
         {
             _userRepository = userRepository;
             _passwordHasher = new PasswordHasher<string>();
             _dbConnectionFactory = dbConnectionFactory;
+            _emailService = emailService;
             _verificationService = new VerificationService(redis);
         }
 
@@ -49,7 +54,7 @@ namespace MovieTicket_Backend.Controllers
 
             string hashedPassword = _passwordHasher.HashPassword(null, request.Password);
 
-            var user = new User
+            var user = new UserDTO
             {
                 FullName = request.FullName,
                 Email = request.Email,
@@ -58,7 +63,6 @@ namespace MovieTicket_Backend.Controllers
                 Gender = request.Gender,
                 DateOfBirth = request.DateOfBirth,
                 Address = request.Address,
-                AccountStatus = "active"
             };
 
             var newUserId = await _userRepository.CreateUser(user);
@@ -114,6 +118,22 @@ namespace MovieTicket_Backend.Controllers
 
             return Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
         }
+
+        // send code to email
+        [HttpPost("send-email-verify")]
+        public async Task<IActionResult> SendVerifyEmail([FromBody] EmailRequest email)
+        {
+            try
+            {
+                await _emailService.SendVerifyEmailAsync(email.To);
+                return Ok(new { message = "Email sent successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to send email", error = ex.Message });
+            }
+        }
+
         // verify code
         [HttpPost("verify-code")]
         public async Task<IActionResult> VerifyCode([FromBody] VerifyCodeRequest request)

@@ -12,6 +12,11 @@ namespace MovieTicket_Backend.Data
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public MySqlConnection CreateConnection() => new MySqlConnection(_connectionString);
+        public MySqlConnection CreateConnection()
+        {
+            var connection =  new MySqlConnection(_connectionString);
+            connection.Open();
+            return connection;
+        }
     }
 }

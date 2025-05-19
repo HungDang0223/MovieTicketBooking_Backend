@@ -30,6 +30,8 @@ namespace MovieTicket_Backend.Models
 
         [Column("address")]
         public string? Address { get; set; }
+        [Column("photo_url")]
+        public string? PhotoUrl { get; set; }
 
         [Column("account_status")]
         public string AccountStatus { get; set; } = "active";

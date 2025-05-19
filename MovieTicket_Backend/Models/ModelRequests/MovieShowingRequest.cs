@@ -4,6 +4,5 @@
     {
         public int MovieId { get; set; }
         public DateOnly ShowingDate { get; set; }
-        public int CinemaBrandId { get; set; }
     }
 }

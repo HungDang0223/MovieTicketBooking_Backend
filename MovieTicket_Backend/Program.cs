@@ -35,13 +35,15 @@ builder.Services.AddSingleton<IVerificationService, VerificationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ISeatReservationNotificationService, SeatReservationNotificationService>();
 builder.Services.AddScoped<IDeviceTokenService, DeviceTokenService>();
+builder.Services.AddScoped<BatchMovieShowingService>();
 
 // Đăng ký các repository
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 builder.Services.AddScoped<MovieRepository>();
 builder.Services.AddScoped<CinemaRepository>();
-builder.Services.AddScoped<MovieShowingRepository>();
+builder.Services.AddScoped<ShowingMovieRepository>();
+builder.Services.AddScoped<ScreenRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
@@ -50,19 +52,33 @@ builder.Services.AddScoped<ISeatReservationRepository, SeatReservationRepository
 builder.Services.AddHostedService<ExpiredReservationCleanupService>();
 
 //Config Redis
+//Config Redis - Improved
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var configuration = builder.Configuration.GetConnectionString("Redis");
 
-    // Parse the connection string to add resilience options
-    var options = ConfigurationOptions.Parse(configuration!);
-    options.AbortOnConnectFail = false;  // Keep retrying if connection fails initially
-    options.ConnectTimeout = 10000;      // 10 seconds
-    options.SyncTimeout = 10000;         // 10 seconds
-    options.ReconnectRetryPolicy = new ExponentialRetry(5000);  // Retry with backoff
+    Console.WriteLine($"Attempting to connect to Redis at: {configuration}");
 
-    return ConnectionMultiplexer.Connect(options);
+    var options = ConfigurationOptions.Parse(configuration!);
+    options.AbortOnConnectFail = false;
+    options.ConnectTimeout = 10000;
+    options.SyncTimeout = 10000;
+    options.ReconnectRetryPolicy = new ExponentialRetry(5000);
+
+    try
+    {
+        var multiplexer = ConnectionMultiplexer.Connect(options);
+        Console.WriteLine("Successfully connected to Redis");
+        return multiplexer;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Failed to connect to Redis: {ex.Message}");
+        throw;
+    }
 });
+
+builder.Services.AddScoped<IVerificationService, VerificationService>();
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddAzureClients(clientBuilder =>

@@ -7,6 +7,7 @@ using MovieTicket_Backend.Models;
 using MovieTicket_Backend.Repositories;
 using MovieTicket_Backend.RepositoryInpl;
 using System.Globalization;
+using static MovieTicket_Backend.Models.ModelDTOs.ModelRequests;
 
 namespace MovieTicket_Backend.Controllers
 {
@@ -46,12 +47,27 @@ namespace MovieTicket_Backend.Controllers
         [HttpPost("update")]
         public async Task<IActionResult> Update([FromBody] User user)
         {
-            var result = await _userRepository.UpdateUser(user);
+            var result = await _userRepository.UpdateUserInfo(user);
             if (result == false)
             {
                 return NotFound(new { status = "error", message = "User not found or something went error" });
             }
             return Ok(new { status = "success", message = "User updated successfully" });
+        }
+
+        // update password
+        [HttpPost("update-password")]
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
+        {
+            var user = await _userRepository.GetUserByEmailPhone(request.emailPhone);
+            if (user == null)
+            {
+                return NotFound(new { status = "error", message = "User not found" });
+            }
+
+            request.newPassword = _passwordHasher.HashPassword(user.UserId, request.newPassword);
+            await _userRepository.UpdateUserPassword(request);
+            return Ok(new { status = "success", message = "Password updated successfully" });
         }
 
         [HttpPost("delete")]

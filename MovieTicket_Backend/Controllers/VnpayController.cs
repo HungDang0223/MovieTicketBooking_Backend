@@ -79,7 +79,7 @@ namespace MovieTicket_Backend.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("IpnAction")]
-        public async Task<IActionResult> IpnAction()
+        public IActionResult IpnAction()
         {
             var vnpParams = Request.Query;
 

@@ -39,8 +39,8 @@ namespace MovieTicket_Backend.RepositoryImpl
                 // Kiểm tra trạng thái ghế
                 if (seat.Status != SeatStatus.Available)
                 {
-                    if (seat.Status == SeatStatus.TemporarilyReserved &&
-                        seat.ReservationExpiresAt < DateTime.UtcNow)
+                    if (seat.Status == SeatStatus.Reserved &&
+                        seat.ReservationExpiresAt < DateTime.Now)
                     {
                         // Đặt chỗ cũ đã hết hạn, có thể đặt lại
                         _logger.LogInformation($"Reservation expired for seat {seat.SeatId}, allowing new reservation");
@@ -52,10 +52,10 @@ namespace MovieTicket_Backend.RepositoryImpl
                 }
 
                 // Cập nhật trạng thái ghế
-                seat.Status = SeatStatus.TemporarilyReserved;
+                seat.Status = SeatStatus.Reserved;
                 seat.ReservedBy = request.UserId;
-                seat.ReservedAt = DateTime.UtcNow;
-                seat.ReservationExpiresAt = DateTime.UtcNow.Add(ReservationExpiration);
+                seat.ReservedAt = DateTime.Now;
+                seat.ReservationExpiresAt = DateTime.Now.Add(ReservationExpiration);
 
                 await _dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -64,7 +64,7 @@ namespace MovieTicket_Backend.RepositoryImpl
                 // Có thể sử dụng Hangfire hoặc Background Service
                 // BackgroundJob.Schedule(() => ReleaseExpiredReservation(seat.Id), ReservationExpiration);
 
-                return (true, $"Đã đặt ghế thành công, vui lòng xác nhận trong vòng {ReservationExpiration.TotalMinutes} phút");
+                return (true, $"Đã đặt ghế thành công, vui lòng thanh toán trong vòng {ReservationExpiration.TotalMinutes} phút");
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -76,7 +76,7 @@ namespace MovieTicket_Backend.RepositoryImpl
             {
                 await transaction.RollbackAsync();
                 _logger.LogError(ex, "Error reserving seat");
-                return (false, "Có lỗi xảy ra khi đặt ghế");
+                return (false, "Có lỗi xảy ra khi đặt ghế. \n" + ex);
             }
         }
 
@@ -89,13 +89,13 @@ namespace MovieTicket_Backend.RepositoryImpl
                     .Where(s => s.ShowingId == showingId && s.SeatId == seatId && s.ReservedBy == userId)
                     .FirstOrDefaultAsync();
 
-                if (seat == null || seat.Status != SeatStatus.TemporarilyReserved)
+                if (seat == null || seat.Status != SeatStatus.Reserved)
                 {
                     return false;
                 }
 
-                // Chuyển trạng thái từ tạm đặt sang đã đặt
-                seat.Status = SeatStatus.Reserved;
+                // Chuyển trạng thái từ tạm đặt sang đã bán
+                seat.Status = SeatStatus.Sold;
 
                 await _dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -118,7 +118,7 @@ namespace MovieTicket_Backend.RepositoryImpl
                     .Where(s => s.ShowingId == showingId && s.SeatId == seatId && s.ReservedBy == userId)
                     .FirstOrDefaultAsync();
 
-                if (seat == null || (seat.Status != SeatStatus.TemporarilyReserved && seat.Status != SeatStatus.Reserved))
+                if (seat == null || (seat.Status != SeatStatus.Reserved && seat.Status != SeatStatus.Reserved))
                 {
                     return false;
                 }
@@ -149,8 +149,8 @@ namespace MovieTicket_Backend.RepositoryImpl
             {
                 var seat = await _dbContext.ShowingSeats.FindAsync(seatId);
 
-                if (seat != null && seat.Status == SeatStatus.TemporarilyReserved &&
-                    seat.ReservationExpiresAt < DateTime.UtcNow)
+                if (seat != null && seat.Status == SeatStatus.Reserved &&
+                    seat.ReservationExpiresAt < DateTime.Now)
                 {
                     seat.Status = SeatStatus.Available;
                     seat.ReservedBy = null;

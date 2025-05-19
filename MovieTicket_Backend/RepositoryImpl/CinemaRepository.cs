@@ -17,45 +17,23 @@ namespace MovieTicket_Backend.RepositoryInpl
             _configuration = configuration;
             connection = _dbConnectionFactory.CreateConnection();
         }
-        public async Task<List<Cinema>> GetAllCinemas()
+        public async Task<Dictionary<String, List<Cinema>>> GetAllCinemas()
         {
             using var connection = _dbConnectionFactory.CreateConnection();
             var query = @"
             SELECT 
-                c.cinema_id AS CinemaId, 
-                c.cinema_name AS CinemaName, 
-                c.location AS Location,
-                cb.brand_name AS Brand,
-                ct.city_name AS City
+                c.*,
+                ct.city_name AS CityName
             FROM 
                 cinema as c
             JOIN 
-                city as ct ON c.city_id = ct.city_id
-            JOIN 
-                cinema_brand as cb on c.brand_id=cb.brand_id";
+                city as ct ON c.city_id = ct.city_id";
             var cinemas = await connection.QueryAsync<Cinema>(query);
-            return cinemas.ToList();
+            var group = cinemas.GroupBy(c => c.CityName)
+                .ToDictionary(g => g.Key, g => g.ToList());
+            return group;
         }
-        public async Task<List<Cinema>> GetCinemasByBrandId(int brandId)
-        {
-            using var connection = _dbConnectionFactory.CreateConnection();
-            var query = @"
-            SELECT 
-                c.cinema_id AS CinemaId, 
-                c.cinema_name AS CinemaName, 
-                c.location AS Location,
-                cb.brand_name AS Brand,
-                ct.city_name AS City
-            FROM 
-                cinema AS c
-            JOIN 
-                city AS ct ON c.city_id = ct.city_id
-            JOIN 
-                cinema_brand as cb on c.brand_id=cb.brand_id
-            WHERE c.brand_id = @BrandId";
-            var cinemas = await connection.QueryAsync<Cinema>(query, new { BrandId = brandId });
-            return cinemas.ToList();
-        }
+
         public async Task<List<Cinema>> GetCinemasByCityId(int cityId)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
@@ -64,14 +42,10 @@ namespace MovieTicket_Backend.RepositoryInpl
                 c.cinema_id AS CinemaId, 
                 c.cinema_name AS CinemaName, 
                 c.location AS Location,
-                cb.brand_name AS Brand,
-                ct.city_name AS City
             FROM 
                 cinema AS c
             JOIN 
                 city AS ct ON c.city_id = ct.city_id
-            JOIN 
-                cinema_brand as cb on c.brand_id=cb.brand_id
             WHERE 
                 c.city_id = @CityId";
             var cinemas = await connection.QueryAsync<Cinema>(query, new { CityId = cityId });

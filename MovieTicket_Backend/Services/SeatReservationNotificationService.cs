@@ -7,8 +7,8 @@ namespace MovieTicket_Backend.Services
 {
     public interface ISeatReservationNotificationService
     {
-        Task NotifySeatStatusChangeAsync(int screeningId, SeatStatusUpdate update);
-        Task NotifyBulkSeatStatusChangeAsync(int screeningId, List<SeatStatusUpdate> updates);
+        Task NotifySeatStatusChangeAsync(int showingId, SeatStatusUpdate update);
+        Task NotifyBulkSeatStatusChangeAsync(int showingId, List<SeatStatusUpdate> updates);
     }
 
     public class SeatReservationNotificationService : ISeatReservationNotificationService
@@ -25,30 +25,30 @@ namespace MovieTicket_Backend.Services
         }
 
         // Gửi thông báo về việc thay đổi trạng thái một ghế
-        public async Task NotifySeatStatusChangeAsync(int screeningId, SeatStatusUpdate update)
+        public async Task NotifySeatStatusChangeAsync(int showingId, SeatStatusUpdate update)
         {
-            string groupName = GetScreeningGroupName(screeningId);
+            string groupName = GetshowingGroupName(showingId);
 
             await _hubContext.Clients.Group(groupName)
                 .SendAsync("ReceiveSeatUpdate", update);
 
-            _logger.LogInformation($"Sent seat status update for seat {update.SeatId} in screening {screeningId}");
+            _logger.LogInformation($"Sent seat status update for seat {update.SeatId} in showing {showingId}");
         }
 
         // Gửi thông báo về việc thay đổi trạng thái nhiều ghế cùng lúc
-        public async Task NotifyBulkSeatStatusChangeAsync(int screeningId, List<SeatStatusUpdate> updates)
+        public async Task NotifyBulkSeatStatusChangeAsync(int showingId, List<SeatStatusUpdate> updates)
         {
-            string groupName = GetScreeningGroupName(screeningId);
+            string groupName = GetshowingGroupName(showingId);
 
             await _hubContext.Clients.Group(groupName)
                 .SendAsync("ReceiveBulkSeatUpdate", updates);
 
-            _logger.LogInformation($"Sent bulk seat status update for {updates.Count} seats in screening {screeningId}");
+            _logger.LogInformation($"Sent bulk seat status update for {updates.Count} seats in showing {showingId}");
         }
 
-        private string GetScreeningGroupName(int screeningId)
+        private string GetshowingGroupName(int showingId)
         {
-            return $"screening_{screeningId}";
+            return $"showing_{showingId}";
         }
     }
 }

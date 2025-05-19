@@ -42,11 +42,11 @@ namespace MovieTicket_Backend.Services
             using var scope = _serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            var now = DateTime.UtcNow;
+            var now = DateTime.Now;
 
             // Tìm tất cả các ghế đã hết hạn
             var expiredSeats = await dbContext.ShowingSeats
-                .Where(s => s.Status == SeatStatus.TemporarilyReserved && s.ReservationExpiresAt < now)
+                .Where(s => s.Status == SeatStatus.Reserved && s.ReservationExpiresAt < now)
                 .ToListAsync(cancellationToken);
 
             if (expiredSeats.Any())

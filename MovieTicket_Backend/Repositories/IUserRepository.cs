@@ -1,13 +1,16 @@
 ﻿using MovieTicket_Backend.Models;
+using MovieTicket_Backend.Models.ModelDTOs;
+using static MovieTicket_Backend.Models.ModelDTOs.ModelRequests;
 
 namespace MovieTicket_Backend.Repositories
 {
     public interface IUserRepository
     {
-        Task<string?> CreateUser(User user);
+        Task<string?> CreateUser(UserDTO user);
         Task<User> GetUserById(string id);
         Task<User> GetUserByEmailPhone(string emailPhone);
-        Task<bool> UpdateUser(User user);
+        Task<bool> UpdateUserInfo(User user);
+        Task<bool> UpdateUserPassword(UpdatePasswordRequest request);
         Task<bool> DeleteUser(string id);
         Task<List<User>> GetAllUsers();
         Task<(string AccessToken, string RefreshToken, User user)> AuthenticateUser(string emailPhone, string password);

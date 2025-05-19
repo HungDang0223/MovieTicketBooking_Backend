@@ -6,7 +6,7 @@ using MovieTicket_Backend.RepositoryImpl;
 namespace MovieTicket_Backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/seat-reserve")]
     public class SeatReservationController : ControllerBase
     {
         private readonly ISeatReservationRepository _seatReservationRepository;

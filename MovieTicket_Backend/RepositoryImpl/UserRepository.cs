@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Connections;
 using Microsoft.IdentityModel.Tokens;
 using MovieTicket_Backend.Data;
 using MovieTicket_Backend.Models;
+using MovieTicket_Backend.Models.ModelDTOs;
 using MovieTicket_Backend.Repositories;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Crypto.Generators;
@@ -11,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using static MovieTicket_Backend.Models.ModelDTOs.ModelRequests;
 
 namespace MovieTicket_Backend.RepositoryInpl
 {
@@ -35,7 +37,7 @@ namespace MovieTicket_Backend.RepositoryInpl
             return listUser;
         }
 
-        public async Task<User> GetUserById(string userId)
+        public async Task<User?> GetUserById(string userId)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
             var user = await connection.QueryFirstOrDefaultAsync<User>("SELECT * FROM user WHERE user_id = @UserId", new { UserId = userId });
@@ -50,18 +52,18 @@ namespace MovieTicket_Backend.RepositoryInpl
             return user;
         }
 
-        public async Task<string?> CreateUser(User user)
+        public async Task<string?> CreateUser(UserDTO user)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
 
             try
             {
-                // Hash the password before storing it
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
-                string query = @"INSERT INTO user (full_name, email, phone_number, password, date_of_birth, address, account_status)
-                         VALUES (@FullName, @Email, @PhoneNumber, @Password, @DateOfBirth, @Address, @AccountStatus);
-                         SELECT LAST_INSERT_ID();";
+                string query = @"
+                        INSERT INTO user (full_name, email, phone_number, password, gender, date_of_birth, address)
+                        VALUES (@FullName, @Email, @PhoneNumber, @Password, @Gender, @DateOfBirth, @Address);
+                        SELECT LAST_INSERT_ID();";
 
                 var userId = await connection.ExecuteScalarAsync<string>(query, user);
                 return userId;
@@ -78,7 +80,7 @@ namespace MovieTicket_Backend.RepositoryInpl
             }
         }
 
-        public async Task<bool> UpdateUser(User user)
+        public async Task<bool> UpdateUserInfo(User user)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
             string query = @"
@@ -91,10 +93,26 @@ namespace MovieTicket_Backend.RepositoryInpl
             return rowsAffected > 0;
         }
 
+        public async Task<bool> UpdatePassword(UpdatePasswordRequest request)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+            string query = @"
+                            UPDATE user 
+                            SET password = @Password
+                            WHERE phone_number = @EmailPhone OR email = @EmailPhone";
+
+            int rowsAffected = await connection.ExecuteAsync(query, new { EmailPhone = request.emailPhone});
+            return rowsAffected > 0;
+        }
+
         public async Task<bool> DeleteUser(string userId)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
-            var query = @"UPDATE users SET email = CONCAT(email, '__deleted__', NOW()), account_status = 'DELETED' WHERE user_id=@userId";
+            var query = @"
+                        UPDATE users 
+                        SET email = CONCAT(email, '__deleted),
+                            phone_number = CONCAT(phone_number, '__deleted)
+                            account_status = 'Deleted' WHERE user_id=@userId";
             int rowsAffected = await connection.ExecuteAsync(query, new { userId });
             return rowsAffected > 0;
         }
@@ -122,6 +140,17 @@ namespace MovieTicket_Backend.RepositoryInpl
             var sql = @"SELECT * FROM booking WHERE user_id = @UserId";
             var bookings = await connection.QueryAsync<Ticket>(sql, new { UserId = userId });
             return bookings.ToList();
+        }
+
+        public async Task<bool> UpdateUserPassword(UpdatePasswordRequest request)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+            string query = @"
+                            UPDATE user 
+                            SET password = @Password
+                            WHERE phone_number = @EmailPhone OR email = @EmailPhone";
+            int rowsAffected = await connection.ExecuteAsync(query, new { EmailPhone = request.emailPhone, Password = request.newPassword });
+            return rowsAffected > 0;
         }
     }
 }

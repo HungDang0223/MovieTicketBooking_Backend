@@ -4,6 +4,7 @@ using MovieTicket_Backend.Models;
 using MovieTicket_Backend.Models.ModelDTOs;
 using MovieTicket_Backend.Repositories;
 using MovieTicket_Backend.RepositoryInpl;
+using static MovieTicket_Backend.Models.ModelDTOs.ModelRequests;
 
 namespace MovieTicket_Backend.Controllers
 {
