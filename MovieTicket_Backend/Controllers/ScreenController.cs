@@ -13,19 +13,16 @@ namespace MovieTicket_Backend.Controllers
             _logger = logger;
             _screenRepository = screenRepository;
         }
-        [HttpGet("/{screenId}/seats")]
-        public async Task<IActionResult> GetScreenSeats(int screenId)
+
+        [HttpGet("{screenId}/seats")]
+        public async Task<IActionResult> GetSeatsByScreen(int screenId)
         {
-            try
+            var rowSeats = await _screenRepository.GetSeatsByScreenIdAsync(screenId);
+            if (rowSeats == null || !rowSeats.Any())
             {
-                var result = await _screenRepository.GetScreenSeats(screenId);
-                return Ok(result);
+                return NotFound($"Không tìm thấy ghế cho screen_id = {screenId}");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting screen seats");
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(rowSeats);
         }
     }
 }

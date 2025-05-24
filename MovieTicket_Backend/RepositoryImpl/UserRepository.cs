@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Connections;
 using Microsoft.IdentityModel.Tokens;
 using MovieTicket_Backend.Data;
+using MovieTicket_Backend.ModelDTOs;
 using MovieTicket_Backend.Models;
-using MovieTicket_Backend.Models.ModelDTOs;
 using MovieTicket_Backend.Repositories;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Crypto.Generators;
@@ -12,7 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using static MovieTicket_Backend.Models.ModelDTOs.ModelRequests;
+using static MovieTicket_Backend.ModelDTOs.ModelRequests;
 
 namespace MovieTicket_Backend.RepositoryInpl
 {

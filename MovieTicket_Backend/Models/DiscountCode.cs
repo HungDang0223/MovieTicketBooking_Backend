@@ -2,11 +2,11 @@
 {
     public class DiscountCode
     {
-        public int CodeId { get; set; }
+        public int Id { get; set; }
         public int DiscountId { get; set; }
-        public string DiscountCodeValue { get; set; } = null!;
+        public string Code { get; set; }
         public bool IsUsed { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public string? UsedBy { get; set; } // user_id
+        public DateTime UsedAt { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace MovieTicket_Backend.Models.ModelDTOs
+﻿namespace MovieTicket_Backend.ModelDTOs
 {
     public class ShowingMovieDTO
     {
@@ -13,5 +13,11 @@
         public string Language { get; set; } = string.Empty;
         public string SubtitleLanguage { get; set; } = string.Empty;
         public int SeatCount { get; set; }
+    }
+
+    public class MovieShowingRequest
+    {
+        public int MovieId { get; set; }
+        public DateOnly ShowingDate { get; set; }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using Dapper;
 using Microsoft.EntityFrameworkCore;
 using MovieTicket_Backend.Data;
+using MovieTicket_Backend.ModelDTOs;
 using MovieTicket_Backend.Models;
-using MovieTicket_Backend.Models.ModelDTOs;
 using MovieTicket_Backend.Services;
 
 namespace MovieTicket_Backend.RepositoryInpl

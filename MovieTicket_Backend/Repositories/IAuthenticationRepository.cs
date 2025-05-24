@@ -8,5 +8,6 @@ namespace MovieTicket_Backend.Repositories
         public string GenerateRefreshToken();
         public Task SaveRefreshToken(string userId, string refreshToken);
         public Task<bool> ValidateRefreshToken(string userId, string refreshToken);
+        public string? GetUserIdFromToken(string token);
     }
 }

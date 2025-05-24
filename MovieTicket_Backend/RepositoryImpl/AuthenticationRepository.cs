@@ -82,5 +82,19 @@ namespace MovieTicket_Backend.RepositoryImpl
             var user = await connection.QueryFirstOrDefaultAsync<User>(sql, new { UserId = userId, RefreshToken = refreshToken });
             return user != null;
         }
+
+        // Get UserId from token
+        public string? GetUserIdFromToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var claims = jwtToken.Claims;
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim != null)
+            {
+                return userIdClaim.Value;
+            }
+            return null;
+        }
     }
 }

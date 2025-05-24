@@ -1,9 +1,9 @@
 ﻿using Dapper;
 using MovieTicket_Backend.Data;
+using MovieTicket_Backend.ModelDTOs;
 using MovieTicket_Backend.Models;
-using MovieTicket_Backend.Models.ModelDTOs;
 using MovieTicket_Backend.Repositories;
-using static MovieTicket_Backend.Models.ModelDTOs.ModelRequests;
+using static MovieTicket_Backend.ModelDTOs.ModelRequests;
 
 namespace MovieTicket_Backend.RepositoryInpl
 {

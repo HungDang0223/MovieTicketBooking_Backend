@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using MovieTicket_Backend.Data;
 using MovieTicket_Backend.Models;
-using MovieTicket_Backend.Models.ModelDTOs;
 using MySql.Data.MySqlClient;
 
 namespace MovieTicket_Backend.RepositoryInpl

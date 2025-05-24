@@ -1,4 +1,4 @@
-﻿namespace MovieTicket_Backend.Models.ModelRequests
+﻿namespace MovieTicket_Backend.ModelDTOs
 {
     public class RegisterRequest
     {
@@ -15,6 +15,17 @@
     {
         public string EmailOrPhone { get; set; }
         public string Password { get; set; }
+    }
+
+    public class VerifyCodeRequest
+    {
+        public string EmailOrPhone { get; set; }
+        public string Code { get; set; }
+        public VerifyCodeRequest(string emailOrPhone, string code)
+        {
+            EmailOrPhone = emailOrPhone;
+            Code = code;
+        }
     }
 
 }

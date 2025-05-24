@@ -3,15 +3,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MimeKit;
 using MovieTicket_Backend.Data;
+using MovieTicket_Backend.ModelDTOs;
 using MovieTicket_Backend.Models;
-using MovieTicket_Backend.Models.ModelDTOs;
-using MovieTicket_Backend.Models.ModelRequests;
 using MovieTicket_Backend.Repositories;
 using MovieTicket_Backend.RepositoryInpl;
 using MovieTicket_Backend.Services;
 using StackExchange.Redis;
 using System.Threading.Tasks;
-using static MovieTicket_Backend.Models.ModelDTOs.ModelRequests;
+using static MovieTicket_Backend.ModelDTOs.ModelRequests;
 
 namespace MovieTicket_Backend.Controllers
 {

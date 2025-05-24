@@ -1,6 +1,7 @@
 ﻿using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.WebSockets;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.IdentityModel.Tokens;
@@ -33,6 +34,8 @@ builder.Services.AddSingleton<DbConnectionFactory>();
 builder.Services.AddSingleton<IVnpay, Vnpay>();
 builder.Services.AddSingleton<IVerificationService, VerificationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddSingleton<WebSocketConnectionManager>();
+builder.Services.AddSingleton<IWebSocketService, WebSocketService>();
 builder.Services.AddScoped<ISeatReservationNotificationService, SeatReservationNotificationService>();
 builder.Services.AddScoped<IDeviceTokenService, DeviceTokenService>();
 builder.Services.AddScoped<BatchMovieShowingService>();
@@ -40,6 +43,7 @@ builder.Services.AddScoped<BatchMovieShowingService>();
 // Đăng ký các repository
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+builder.Services.AddScoped<DiscountRepository>();
 builder.Services.AddScoped<MovieRepository>();
 builder.Services.AddScoped<CinemaRepository>();
 builder.Services.AddScoped<ShowingMovieRepository>();
@@ -124,6 +128,10 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5000);
+});
 
 // matching column names with underscore with C# properties in class
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -139,6 +147,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseWebSockets();
+
+app.UseMiddleware<WebSocketMiddleware>();
 
 app.UseCors("AllowAll");
 

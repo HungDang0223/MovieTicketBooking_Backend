@@ -7,7 +7,7 @@ using MovieTicket_Backend.Models;
 using MovieTicket_Backend.Repositories;
 using MovieTicket_Backend.RepositoryInpl;
 using System.Globalization;
-using static MovieTicket_Backend.Models.ModelDTOs.ModelRequests;
+using static MovieTicket_Backend.ModelDTOs.ModelRequests;
 
 namespace MovieTicket_Backend.Controllers
 {

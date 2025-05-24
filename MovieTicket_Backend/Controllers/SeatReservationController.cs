@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MovieTicket_Backend.Models;
 using MovieTicket_Backend.Repositories;
-using MovieTicket_Backend.RepositoryImpl;
+using MovieTicket_Backend.Services;
 
 namespace MovieTicket_Backend.Controllers
 {
@@ -10,10 +10,14 @@ namespace MovieTicket_Backend.Controllers
     public class SeatReservationController : ControllerBase
     {
         private readonly ISeatReservationRepository _seatReservationRepository;
+        private readonly ISeatReservationNotificationService _notificationService;
 
-        public SeatReservationController(ISeatReservationRepository seatReservationRepository)
+        public SeatReservationController(
+            ISeatReservationRepository seatReservationRepository,
+            ISeatReservationNotificationService notificationService)
         {
             _seatReservationRepository = seatReservationRepository;
+            _notificationService = notificationService;
         }
 
         [HttpPost("reserve")]
@@ -23,6 +27,17 @@ namespace MovieTicket_Backend.Controllers
 
             if (success)
             {
+                // Notify WebSocket clients about seat status change
+                var update = new SeatStatusUpdate
+                {
+                    SeatId = request.SeatId,
+                    Status = SeatStatus.Reserved,
+                    ReservedBy = int.TryParse(request.UserId, out var userId) ? userId : null,
+                    ReservationExpiresAt = DateTime.Now.AddMinutes(10)
+                };
+
+                await _notificationService.NotifySeatStatusChangeAsync(request.ShowingId, update);
+
                 return Ok(new { success, message });
             }
 
@@ -37,6 +52,17 @@ namespace MovieTicket_Backend.Controllers
 
             if (success)
             {
+                // Notify WebSocket clients about seat confirmation
+                var update = new SeatStatusUpdate
+                {
+                    SeatId = request.SeatId,
+                    Status = SeatStatus.Sold,
+                    ReservedBy = int.TryParse(request.UserId, out var userId) ? userId : null,
+                    ReservationExpiresAt = null
+                };
+
+                await _notificationService.NotifySeatStatusChangeAsync(request.ShowingId, update);
+
                 return Ok(new { success, message = "Đặt ghế thành công" });
             }
 
@@ -51,6 +77,17 @@ namespace MovieTicket_Backend.Controllers
 
             if (success)
             {
+                // Notify WebSocket clients about seat cancellation
+                var update = new SeatStatusUpdate
+                {
+                    SeatId = request.SeatId,
+                    Status = SeatStatus.Available,
+                    ReservedBy = null,
+                    ReservationExpiresAt = null
+                };
+
+                await _notificationService.NotifySeatStatusChangeAsync(request.ShowingId, update);
+
                 return Ok(new { success, message = "Đã hủy đặt ghế" });
             }
 

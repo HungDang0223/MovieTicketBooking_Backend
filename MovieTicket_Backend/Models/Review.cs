@@ -9,11 +9,6 @@ namespace MovieTicket_Backend.Models
         public int ReviewId { get; set; }
         [Column("user_id")]
         public string UserId { get; set; }
-        [Column("full_name")]
-        public string FullName { get; set; }
-        [Column("photo_path")]
-        public string PhotoPath { get; set; }
-        [Column("movie_id")]
         public int MovieId { get; set; }
         [Column("rating")]
         public int Rating { get; set; }

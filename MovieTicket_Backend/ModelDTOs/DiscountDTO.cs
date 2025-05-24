@@ -1,20 +1,20 @@
-﻿namespace MovieTicket_Backend.Models
+﻿namespace MovieTicket_Backend.ModelDTOs
 {
-    public class Discount
+    public class DiscountDTO
     {
-        public int DiscountId { get; set; }
         public string? DiscountCode { get; set; }  // có thể null
         public string? DiscountDescription { get; set; }
         public string DiscountType { get; set; } = null!;  // 'percent', 'fixed', 'point'
         public decimal DiscountValue { get; set; }
         public decimal? MaxDiscount { get; set; }
         public decimal? MinOrderValue { get; set; }
-        public int Quantity { get; set; } // = -100 nếu không giới hạn số lượng
-                                          // Không thể đồng thời =-100 và DiscountCode=null
-        public bool IsActive { get; set; }
+        public int Quantity { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+    }
+    public class ApplyDiscountRequest
+    {
+        public string DiscountCode { get; set; }
+        public string UserId { get; set; }
     }
 }

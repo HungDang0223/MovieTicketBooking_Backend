@@ -1,6 +1,6 @@
-﻿using MovieTicket_Backend.Models;
-using MovieTicket_Backend.Models.ModelDTOs;
-using static MovieTicket_Backend.Models.ModelDTOs.ModelRequests;
+﻿using MovieTicket_Backend.ModelDTOs;
+using MovieTicket_Backend.Models;
+using static MovieTicket_Backend.ModelDTOs.ModelRequests;
 
 namespace MovieTicket_Backend.Repositories
 {

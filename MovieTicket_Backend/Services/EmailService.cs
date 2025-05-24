@@ -1,7 +1,6 @@
 ﻿using MimeKit;
 using MailKit.Net.Smtp;
 using StackExchange.Redis;
-using MovieTicket_Backend.Models.ModelRequests;
 
 namespace MovieTicket_Backend.Services
 {

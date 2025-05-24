@@ -33,6 +33,8 @@ namespace MovieTicket_Backend.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<ShowingSeat> ShowingSeats { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<UserReview> UserReviews { get; set; }
+        public DbSet<DiscountCode> DiscountsCodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -80,6 +82,8 @@ namespace MovieTicket_Backend.Data
 
             modelBuilder.Entity<Discount>().ToTable("discount")
                 .HasKey(d => d.DiscountId);
+            modelBuilder.Entity<DiscountCode>().ToTable("discount_code")
+                .HasKey(dc => dc.Id);
 
             modelBuilder.Entity<User>().ToTable("user")
                 .HasKey(u => u.UserId);
@@ -112,6 +116,9 @@ namespace MovieTicket_Backend.Data
 
             modelBuilder.Entity<Review>().ToTable("review")
                 .HasKey(r => r.ReviewId);
+
+            modelBuilder.Entity<UserReview>().ToTable("user_review")
+                .HasKey(ur => new { ur.UserId, ur.ReviewId });
 
             modelBuilder.UseSnakeCaseNames();
             

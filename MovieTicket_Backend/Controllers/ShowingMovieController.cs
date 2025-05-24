@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MovieTicket_Backend.Data;
 using MovieTicket_Backend.Models;
-using MovieTicket_Backend.Models.ModelRequests;
 using MovieTicket_Backend.RepositoryInpl;
 using MovieTicket_Backend.Services;
 

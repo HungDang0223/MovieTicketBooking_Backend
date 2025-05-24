@@ -1,4 +1,4 @@
-﻿namespace MovieTicket_Backend.Models.ModelDTOs
+﻿namespace MovieTicket_Backend.ModelDTOs
 {
     public class MovieDetailDTO
     {
@@ -16,7 +16,6 @@
         public DateTime? ShowingDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int FavouritesCount { get; set; } = 0;
-        public List<ReviewDTO> Reviews { get; set; } = new();
         public bool IsFavourited { get; set; } = false;
     }
 }

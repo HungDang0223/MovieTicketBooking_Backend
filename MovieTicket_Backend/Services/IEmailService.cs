@@ -1,6 +1,4 @@
-﻿using MovieTicket_Backend.Models.ModelRequests;
-
-namespace MovieTicket_Backend.Services
+﻿namespace MovieTicket_Backend.Services
 {
     public interface IEmailService
     {

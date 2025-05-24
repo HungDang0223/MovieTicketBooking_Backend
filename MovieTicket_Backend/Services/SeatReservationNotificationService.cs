@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using MovieTicket_Backend.Hubs;
-using MovieTicket_Backend.Models;
-using System.Threading.Tasks;
+﻿using MovieTicket_Backend.Models;
 
 namespace MovieTicket_Backend.Services
 {
@@ -13,42 +10,27 @@ namespace MovieTicket_Backend.Services
 
     public class SeatReservationNotificationService : ISeatReservationNotificationService
     {
-        private readonly IHubContext<SeatReservationHub> _hubContext;
+        private readonly IWebSocketService _webSocketService;
         private readonly ILogger<SeatReservationNotificationService> _logger;
 
         public SeatReservationNotificationService(
-            IHubContext<SeatReservationHub> hubContext,
+            IWebSocketService webSocketService,
             ILogger<SeatReservationNotificationService> logger)
         {
-            _hubContext = hubContext;
+            _webSocketService = webSocketService;
             _logger = logger;
         }
 
-        // Gửi thông báo về việc thay đổi trạng thái một ghế
         public async Task NotifySeatStatusChangeAsync(int showingId, SeatStatusUpdate update)
         {
-            string groupName = GetshowingGroupName(showingId);
-
-            await _hubContext.Clients.Group(groupName)
-                .SendAsync("ReceiveSeatUpdate", update);
-
-            _logger.LogInformation($"Sent seat status update for seat {update.SeatId} in showing {showingId}");
+            await _webSocketService.NotifySeatStatusChangeAsync(showingId, update);
+            _logger.LogInformation($"Notified seat status change for seat {update.SeatId} in showing {showingId}");
         }
 
-        // Gửi thông báo về việc thay đổi trạng thái nhiều ghế cùng lúc
         public async Task NotifyBulkSeatStatusChangeAsync(int showingId, List<SeatStatusUpdate> updates)
         {
-            string groupName = GetshowingGroupName(showingId);
-
-            await _hubContext.Clients.Group(groupName)
-                .SendAsync("ReceiveBulkSeatUpdate", updates);
-
-            _logger.LogInformation($"Sent bulk seat status update for {updates.Count} seats in showing {showingId}");
-        }
-
-        private string GetshowingGroupName(int showingId)
-        {
-            return $"showing_{showingId}";
+            await _webSocketService.NotifyBulkSeatStatusChangeAsync(showingId, updates);
+            _logger.LogInformation($"Notified bulk seat status change for {updates.Count} seats in showing {showingId}");
         }
     }
 }
